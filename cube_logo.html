@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixelincorp</title>
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #stage {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #cubeWrap {
+
+      transform-style: preserve-3d;
+      transition: opacity 1s ease-out;
+
+      filter: blur(0.55px);
+    }
+
+    #cubeWrap.is-hidden {
+      opacity: 0;
+    }
+
+    #cube {
+      position: relative;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    #miniCubes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      transform-style: preserve-3d;
+    }
+
+    .face {
+      position: absolute;
+      inset: -1px;
+      border-radius: 0;
+      border: 1.5px solid rgba(171, 131, 253, 0.5);
+      background: linear-gradient(135deg, rgba(68, 28, 141, 0.72), rgba(85, 36, 178, 0.50));
+      box-shadow:
+        inset 0 0 24px rgba(141, 88, 250, 0.35),
+        0 0 18px rgba(120, 59, 237, 0.4);
+
+      outline: 1px solid transparent;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    .face::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 0;
+      opacity: 0;
+      background: linear-gradient(315deg, rgba(85, 41, 168, 0.88), rgba(102, 38, 212, 0.72));
+      animation: sheen 6s ease-in-out infinite;
+    }
+
+    @keyframes sheen {
+
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .p-letter {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .mini {
+      position: absolute;
+      transform-style: preserve-3d;
+    }
+
+    .mini-spin {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .mini-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 0;
+      border: 1px solid rgba(204, 184, 254, 0.8);
+      background: linear-gradient(135deg, rgba(171, 133, 253, 0.95), rgba(68, 28, 141, 0.9));
+      box-shadow: inset 0 0 8px rgba(204, 184, 254, 0.45);
+      outline: 1px solid transparent;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+
+    .firefly {
+      position: absolute;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      pointer-events: none;
+    }
+
+    .firefly-dot {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle closest-side,
+          #ffffff 0%,
+          #f3ecff 16%,
+          rgba(196, 168, 255, 0.95) 25%,
+          rgba(171, 133, 253, 0.5) 42%,
+          rgba(171, 133, 253, 0.12) 70%,
+          rgba(171, 133, 253, 0) 100%);
+      animation: twinkle ease-in-out infinite;
+      will-change: transform;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0.12;
+      }
+
+      50% {
+        opacity: 0.95;
+      }
+    }
+</style>
+</head>
+
+<body>
+  <div id="stage">
+
+    <div id="cubeWrap" class="is-hidden">
+      <div id="cube">
+        <div class="face" data-face="front"></div>
+        <div class="face" data-face="back"></div>
+        <div class="face" data-face="right"></div>
+        <div class="face" data-face="left"></div>
+        <div class="face" data-face="top"></div>
+        <div class="face" data-face="bottom"></div>
+        <div id="miniCubes"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+
+    let CS = 120;
+    let HS = 60;
+
+    function computeSize() {
+      const vmin = Math.min(window.innerWidth, window.innerHeight);
+      CS = Math.max(80, Math.min(vmin * 0.28, 220));
+      HS = CS / 2;
+    }
+
+    function applySize() {
+      const cubeEl = $('cube');
+      const wrapEl = $('cubeWrap');
+
+      cubeEl.style.width = CS + 'px';
+      cubeEl.style.height = CS + 'px';
+
+      wrapEl.style.perspective = (CS * 8) + 'px';
+      wrapEl.style.width = CS + 'px';
+      wrapEl.style.height = CS + 'px';
+
+      const faces = {
+        front: `translateZ(${HS}px)`,
+        back: `rotateY(180deg) translateZ(${HS}px)`,
+        right: `rotateY(90deg)  translateZ(${HS}px)`,
+        left: `rotateY(-90deg) translateZ(${HS}px)`,
+        top: `rotateX(90deg)  translateZ(${HS}px)`,
+        bottom: `rotateX(-90deg) translateZ(${HS}px)`
+      };
+      document.querySelectorAll('.face').forEach(f => {
+        f.style.transform = faces[f.dataset.face];
+      });
+
+      document.querySelectorAll('.firefly').forEach(p => {
+        p.style.left = HS + 'px';
+        p.style.top = HS + 'px';
+      });
+    }
+
+    function pixelP(size, color) {
+      const cell = size / 7;
+      const K = 1.10;
+      const cellY = cell * K;
+      const pattern = ['XXXXX..', 'X....X.', 'X....X.', 'XXXXX..', 'X......', 'X......', 'X......'];
+      let rects = '';
+      pattern.forEach((row, y) => [...row].forEach((ch, x) => {
+        if (ch === 'X') {
+
+          rects += `<rect x="${x * cell + 0.4}" y="${y * cellY + 0.4}"
+            width="${cell - 0.8}" height="${cellY - 0.8}"
+            rx="${cell * 0.18}" fill="${color}"/>`;
+        }
+      }));
+
+      return `<svg viewBox="${-cell / 2} 0 ${size} ${size * K}" width="${size * 0.72}" height="${size * 0.72 * K}"
+        style="display:block;
+               filter:drop-shadow(0 0 ${size * 0.09}px rgba(145,93,250,0.95));
+               shape-rendering:geometricPrecision;
+               overflow:visible">
+        ${rects}
+      </svg>`;
+    }
+
+    function initCubeLetters() {
+
+      document.querySelectorAll('.p-letter').forEach(el => el.remove());
+      const pSize = Math.round(CS * 0.72);
+      const html = `<div class="p-letter">${pixelP(pSize, '#ab8dfd')}</div>`;
+      document.querySelectorAll('.face').forEach(f => f.insertAdjacentHTML('beforeend', html));
+    }
+
+    const miniDefs = [
+      { sf: 0.22, xf: -0.22, yf: -0.22, zf: 0.00 },
+      { sf: 0.17, xf: 0.22, yf: 0.22, zf: 0.00 },
+      { sf: 0.25, xf: 0.00, yf: 0.15, zf: -0.22 },
+      { sf: 0.17, xf: -0.22, yf: 0.22, zf: 0.22 },
+      { sf: 0.20, xf: 0.22, yf: -0.22, zf: 0.22 }
+    ];
+
+    const miniAnimHandles = [];
+
+    function initMiniCubes() {
+
+      $('miniCubes').innerHTML = '';
+      miniAnimHandles.length = 0;
+
+      miniDefs.forEach(({ sf, xf, yf, zf }) => {
+        const size = CS * sf;
+        const half = size / 2;
+        const x = CS * xf, y = CS * yf, z = CS * zf;
+
+        const outer = document.createElement('div');
+        outer.className = 'mini';
+        Object.assign(outer.style, {
+          width: size + 'px', height: size + 'px',
+
+          left: HS + 'px', top: HS + 'px',
+          marginLeft: (-half) + 'px', marginTop: (-half) + 'px',
+          transform: `translate3d(${x}px,${y}px,${z}px)`
+        });
+
+        const inner = document.createElement('div');
+        inner.className = 'mini-spin';
+
+        [`translateZ(${half}px)`,
+        `rotateY(180deg) translateZ(${half}px)`,
+        `rotateY(90deg)  translateZ(${half}px)`,
+        `rotateY(-90deg) translateZ(${half}px)`,
+        `rotateX(90deg)  translateZ(${half}px)`,
+        `rotateX(-90deg) translateZ(${half}px)`
+        ].forEach(tr => {
+          const f = document.createElement('div');
+          f.className = 'mini-face';
+          f.style.transform = tr;
+          inner.appendChild(f);
+        });
+
+        outer.appendChild(inner);
+        $('miniCubes').appendChild(outer);
+
+        const vx = (Math.random() - 0.5) * 1.4, vy = (Math.random() - 0.5) * 1.1;
+        const speed = Math.max(Math.hypot(vx, vy) * 60, 25);
+        const dur = 360 / speed * 1000;
+        const ax = vx || 0.3, ay = vy || 0.3, az = (Math.random() - 0.5) * 0.6;
+        const anim = inner.animate(
+          [{ transform: `rotate3d(${ax},${ay},${az},0deg)` },
+          { transform: `rotate3d(${ax},${ay},${az},360deg)` }],
+          { duration: dur, iterations: Infinity, easing: 'linear', delay: -Math.random() * dur }
+        );
+        miniAnimHandles.push(anim);
+      });
+    }
+
+    const fireflies = [];
+
+    function initCubeParticles() {
+
+      $('cube').querySelectorAll('.firefly').forEach(el => el.remove());
+      fireflies.length = 0;
+
+      const R = CS * 0.44;
+      const rnd = () => (Math.random() * 2 - 1) * R;
+
+      for (let i = 0; i < 10; i++) {
+        const s = CS * (0.025 + Math.random() * 0.035);
+        const D = s * 5;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'firefly';
+        wrap.style.left = HS + 'px';
+        wrap.style.top = HS + 'px';
+
+        const dot = document.createElement('div');
+        dot.className = 'firefly-dot';
+        Object.assign(dot.style, {
+          width: D + 'px', height: D + 'px',
+          marginLeft: (-D / 2) + 'px', marginTop: (-D / 2) + 'px',
+          animationDuration: (2.5 + Math.random() * 3.5).toFixed(2) + 's',
+          animationDelay: (-Math.random() * 5).toFixed(2) + 's'
+        });
+        wrap.appendChild(dot);
+        $('cube').appendChild(wrap);
+
+        const pts = Array.from({ length: 4 }, () => `translate3d(${rnd()}px,${rnd()}px,${rnd()}px)`);
+        pts.push(pts[0]);
+        const dur = (16 + Math.random() * 14) * 1000;
+        wrap.animate(
+          pts.map(transform => ({ transform, easing: 'ease-in-out' })),
+          { duration: dur, iterations: Infinity, delay: -Math.random() * dur }
+        );
+
+        fireflies.push(dot);
+      }
+    }
+
+    const rot = { x: -18, y: 25, z: 0 };
+    const targetTilt = { x: -18, z: 0 };
+    let lastCube = 0;
+    const cubeNode = $('cube');
+
+    function updateCube(t) {
+      const dt = Math.min((t - lastCube) / 1000, 0.1);
+      lastCube = t;
+      rot.y = (rot.y + 12 * dt) % 360;
+      if (Math.random() < 0.18 * dt) {
+        targetTilt.x = -35 + Math.random() * 70;
+        targetTilt.z = -25 + Math.random() * 50;
+      }
+      const f = 1 - Math.pow(1 - 0.008, dt * 60);
+      rot.x += (targetTilt.x - rot.x) * f;
+      rot.z += (targetTilt.z - rot.z) * f;
+      const bob = Math.sin(t / 1400) * (CS * 0.05);
+      cubeNode.style.transform =
+        `translateY(${bob}px) rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
+
+      const inv = `rotateZ(${-rot.z}deg) rotateY(${-rot.y}deg) rotateX(${-rot.x}deg)`;
+      for (let i = 0; i < fireflies.length; i++) fireflies[i].style.transform = inv;
+    }
+
+    let paused = false;
+    function syncPause() {
+      document.getAnimations().forEach(a => {
+        const it = a.effect && a.effect.getComputedTiming().iterations;
+        if (it !== Infinity) return;
+        if (paused) a.pause();
+        else if (a.playState === 'paused') a.play();
+      });
+    }
+    function setPaused(p) {
+      if (paused === p) return;
+      paused = p;
+      syncPause();
+    }
+    window.addEventListener('obsSourceVisibleChanged', e => setPaused(!(e.detail && e.detail.visible)));
+    document.addEventListener('visibilitychange', () => setPaused(document.hidden));
+
+    function loop(t) {
+      requestAnimationFrame(loop);
+      if (paused) return;
+      updateCube(t);
+    }
+
+    let resizeTimer;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        computeSize();
+        applySize();
+        initCubeLetters();
+        initMiniCubes();
+        initCubeParticles();
+        if (paused) syncPause();
+      }, 150);
+    }
+    window.addEventListener('resize', onResize);
+
+    function playIntro() {
+      $('cubeWrap').classList.add('is-hidden');
+      void document.body.offsetWidth;
+      setTimeout(() => $('cubeWrap').classList.remove('is-hidden'), 150);
+    }
+
+    computeSize();
+    applySize();
+    initCubeLetters();
+    initMiniCubes();
+    initCubeParticles();
+    playIntro();
+    requestAnimationFrame(loop);
+</script>
+</body>
+
+</html>

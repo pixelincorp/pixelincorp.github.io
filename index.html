@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixelincorp</title>
+<meta property="og:title" content="Pixelincorp">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Crect width='8' height='8' fill='%230e0b1a'/%3E%3Cpath d='M2 1h3v1h1v2H5v1H3v2H2z' fill='%23b388ff' /%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0b1a; --bg2:#1a1330; --card:#171128; --text:#f2eeff; --muted:#9a90bd;
+  --accent:#b388ff; --line:#2c2250;
+  color-scheme: dark;
+}
+*{box-sizing:border-box;margin:0}
+html,body{min-height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  color:var(--text);
+  background:radial-gradient(circle at 50% 0%,var(--bg2),var(--bg) 70%);
+  background-color:var(--bg);
+  background-attachment:fixed;
+  display:flex;justify-content:center;
+  padding:48px 18px 40px;
+}
+.veil{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  background-image:
+    linear-gradient(rgba(88,48,150,.09) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(88,48,150,.09) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+.veil canvas{position:absolute;left:0;top:0;image-rendering:pixelated}
+main{position:relative;z-index:1;width:100%;max-width:460px;text-align:center}
+.logo{
+  display:block;width:min(320px,100%);aspect-ratio:1;height:auto;
+  margin:-36px auto -28px;border:0;background:transparent;
+  color-scheme:light;
+  pointer-events:none;
+}
+h1{font-family:'Press Start 2P','Courier New',monospace;font-size:24px;line-height:1.4;letter-spacing:1px}
+.role{margin-top:12px;color:var(--accent);font-size:15px;font-weight:600}
+h2{
+  font-family:'Press Start 2P','Courier New',monospace;font-size:8px;
+  color:var(--muted);text-align:left;margin:34px 0 14px;letter-spacing:1px;
+}
+ul{list-style:none;padding:0;display:grid;gap:12px}
+a.link{
+  --c:var(--accent);
+  display:flex;align-items:center;gap:14px;
+  padding:15px 18px;text-decoration:none;color:var(--text);
+  background:var(--card);border:2px solid var(--line);border-left:8px solid var(--c);
+  font-family:'Press Start 2P','Courier New',monospace;
+  font-weight:400;font-size:16px;line-height:1.4;text-align:left;
+  transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;
+}
+a.link span.sub{margin-left:auto;color:var(--muted);font-family:'Inter',system-ui,sans-serif;font-size:13px;font-weight:500;line-height:1.3;text-align:right}
+a.link:hover,a.link:focus-visible{
+  transform:translate(-4px,-4px);
+  box-shadow:6px 6px 0 var(--c);
+  border-color:var(--c);outline:none;
+}
+a.link:active{transform:translate(0,0);box-shadow:none}
+.dot{width:12px;height:12px;background:var(--c);flex:none}
+.twitch{--c:#9146ff}.youtube{--c:#ff3b3b}.telegram{--c:#2aabee}
+.kick{--c:#53fc18}.steam{--c:#66c0f4}.games{--c:#ffd54f}.trade{--c:#ff8a65}
+footer{margin-top:40px;color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){a.link{transition:none}}
+@media (max-width:380px){h1{font-size:16px}a.link{padding:13px 14px;gap:10px}}
+</style>
+</head>
+<body>
+<div class="veil" aria-hidden="true"><canvas id="veil"></canvas></div>
+<main>
+  <iframe class="logo" src="cube_logo.html" title="Логотип Pixelincorp" loading="eager" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
+
+  <h1>Pixelincorp</h1>
+  <p class="role">Streamer</p>
+
+  <h2>&gt; СМОТРЕТЬ</h2>
+  <ul>
+    <li><a class="link twitch" href="https://www.twitch.tv/pixelincorp" target="_blank" rel="noopener"><i class="dot"></i>Twitch<span class="sub">стримы</span></a></li>
+    <li><a class="link kick" href="https://kick.com/pixelincorp" target="_blank" rel="noopener"><i class="dot"></i>Kick<span class="sub">стримы</span></a></li>
+    <li><a class="link telegram" href="https://t.me/pixilishe" target="_blank" rel="noopener"><i class="dot"></i>Telegram<span class="sub">новости</span></a></li>
+    <li><a class="link youtube" href="https://www.youtube.com/@pixelincorp" target="_blank" rel="noopener"><i class="dot"></i>YouTube<span class="sub">временно заброшен</span></a></li>
+  </ul>
+
+  <h2>&gt; ИГРЫ</h2>
+  <ul>
+    <li><a class="link games" href="https://docs.google.com/spreadsheets/d/1NlZBJCHFH3LvAdMIYuXF6vkgHBQ7Bv3qVsFci7Rj6QA/edit?pli=1&amp;gid=115731816#gid=115731816" target="_blank" rel="noopener"><i class="dot"></i>Список игр</a></li>
+    <li><a class="link steam" href="https://steamcommunity.com/id/pixelincorp" target="_blank" rel="noopener"><i class="dot"></i>Steam</a></li>
+    <li><a class="link trade" href="https://steamcommunity.com/tradeoffer/new/?partner=124449011&amp;token=_DbKMrzo" target="_blank" rel="noopener"><i class="dot"></i>Trade URL</a></li>
+  </ul>
+
+  <footer>© Pixelincorp</footer>
+</main>
+<script>
+(function(){
+  var CELL=28,FPS=10,cv=document.getElementById('veil'),ctx=cv.getContext('2d');
+  var still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cols,rows,img,cur,tgt,spd,last=0;
+  function rnd(){return .05+Math.random()*.17}
+  function rs(){return .00003+Math.random()*.00008}
+  function paint(){
+    var d=img.data;
+    for(var i=0;i<cur.length;i++)d[i*4+3]=(cur[i]*255)|0;
+    ctx.putImageData(img,0,0);
+  }
+  function resize(){
+    cols=Math.ceil(window.innerWidth/CELL);rows=Math.ceil(window.innerHeight/CELL);
+    cv.width=cols;cv.height=rows;
+    cv.style.width=cols*CELL+'px';cv.style.height=rows*CELL+'px';
+    img=ctx.createImageData(cols,rows);
+    var n=cols*rows,d=img.data;
+    cur=new Float32Array(n);tgt=new Float32Array(n);spd=new Float32Array(n);
+    for(var i=0;i<n;i++){
+      d[i*4]=88;d[i*4+1]=48;d[i*4+2]=150;
+      cur[i]=rnd();tgt[i]=rnd();spd[i]=rs();
+    }
+    paint();
+  }
+  function update(dt){
+    for(var i=0;i<cur.length;i++){
+      var diff=tgt[i]-cur[i];
+      cur[i]+=diff*Math.min(1,spd[i]*dt*1000);
+      if(Math.abs(diff)<.002){tgt[i]=rnd();spd[i]=rs();}
+    }
+    paint();
+  }
+  function loop(t){
+    requestAnimationFrame(loop);
+    if(document.hidden||t-last<1000/FPS)return;
+    var dt=Math.min((t-last)/1000,.1);
+    last=t;
+    update(dt);
+  }
+  resize();
+  var rt;
+  window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(resize,150);});
+  if(!still)requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
