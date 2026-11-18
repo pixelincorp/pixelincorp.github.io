@@ -36,23 +36,6 @@
       overflow: hidden;
     }
 
-    #cubeGlow {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      background: radial-gradient(circle,
-          rgba(130, 70, 245, 0.42) 0%,
-          rgba(120, 59, 237, 0.22) 42%,
-          rgba(120, 59, 237, 0.06) 65%,
-          rgba(120, 59, 237, 0) 78%);
-      transition: opacity 1s ease-out;
-    }
-
-    #cubeWrap.is-hidden ~ #cubeGlow,
-    #stage.is-hidden #cubeGlow {
-      opacity: 0;
-    }
-
     #cubeWrap {
       position: relative;
       transform-style: preserve-3d;
@@ -193,7 +176,6 @@
         <div id="miniCubes"></div>
       </div>
     </div>
-    <div id="cubeGlow"></div>
   </div>
 
   <script>
@@ -212,7 +194,6 @@
     function applySize() {
       const cubeEl = $('cube');
       const wrapEl = $('cubeWrap');
-      const glowEl = $('cubeGlow');
 
       cubeEl.style.width = CS + 'px';
       cubeEl.style.height = CS + 'px';
@@ -220,10 +201,6 @@
       wrapEl.style.perspective = Math.round(CS * 8) + 'px';
       wrapEl.style.width = CS + 'px';
       wrapEl.style.height = CS + 'px';
-
-      const glowSize = Math.round(CS * 1.85);
-      glowEl.style.width = glowSize + 'px';
-      glowEl.style.height = glowSize + 'px';
 
       const faces = {
         front: `translateZ(${HS}px)`,
@@ -381,7 +358,6 @@
     const targetTilt = { x: -18, z: 0 };
     let lastCube = 0;
     const cubeNode = $('cube');
-    const glowNode = $('cubeGlow');
 
     function updateCube(t) {
       const dt = Math.min((t - lastCube) / 1000, 0.1);
@@ -397,7 +373,6 @@
       const bob = Math.sin(t / 1400) * (CS * 0.05);
       cubeNode.style.transform =
         `translate3d(0, ${bob}px, 0) rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
-      glowNode.style.transform = `translate3d(0, ${bob}px, 0)`;
 
       const inv = `rotateZ(${-rot.z}deg) rotateY(${-rot.y}deg) rotateX(${-rot.x}deg)`;
       for (let i = 0; i < fireflies.length; i++) fireflies[i].style.transform = inv;
