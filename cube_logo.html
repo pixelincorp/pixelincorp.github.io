@@ -27,6 +27,7 @@
     }
 
     #stage {
+      position: relative;
       width: 100vw;
       height: 100vh;
       display: flex;
@@ -35,7 +36,25 @@
       overflow: hidden;
     }
 
+    #cubeGlow {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle,
+          rgba(130, 70, 245, 0.42) 0%,
+          rgba(120, 59, 237, 0.22) 42%,
+          rgba(120, 59, 237, 0.06) 65%,
+          rgba(120, 59, 237, 0) 78%);
+      transition: opacity 1s ease-out;
+    }
+
+    #cubeWrap.is-hidden ~ #cubeGlow,
+    #stage.is-hidden #cubeGlow {
+      opacity: 0;
+    }
+
     #cubeWrap {
+      position: relative;
       transform-style: preserve-3d;
       transition: opacity 1s ease-out;
     }
@@ -60,28 +79,25 @@
     .face {
       position: absolute;
       inset: 0;
-      border-radius: 1.5px;
-      border: 1px solid transparent;
-      background-clip: padding-box;
+      overflow: hidden;
       background: linear-gradient(135deg, rgba(68, 28, 141, 0.72), rgba(85, 36, 178, 0.50));
       box-shadow:
-        inset 0 0 0 1.5px rgba(171, 131, 253, 0.52),
-        inset 0 0 24px rgba(141, 88, 250, 0.35),
-        0 0 18px rgba(120, 59, 237, 0.4);
+        inset 0 0 0 1.5px rgba(171, 131, 253, 0.55),
+        inset 0 0 24px rgba(141, 88, 250, 0.38);
       outline: 1px solid transparent;
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
-      will-change: transform;
     }
 
     .face::before {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: inherit;
       opacity: 0;
       background: linear-gradient(315deg, rgba(85, 41, 168, 0.88), rgba(102, 38, 212, 0.72));
+      box-shadow: inset 0 0 0 1.5px rgba(185, 150, 255, 0.55);
       animation: sheen 6s ease-in-out infinite;
+      pointer-events: none;
     }
 
     @keyframes sheen {
@@ -102,7 +118,6 @@
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      transform: translateZ(0.1px);
     }
 
     .mini {
@@ -120,9 +135,7 @@
     .mini-face {
       position: absolute;
       inset: 0;
-      border-radius: 1px;
-      border: 1px solid transparent;
-      background-clip: padding-box;
+      overflow: hidden;
       background: linear-gradient(135deg, rgba(171, 133, 253, 0.95), rgba(68, 28, 141, 0.9));
       box-shadow:
         inset 0 0 0 1px rgba(204, 184, 254, 0.82),
@@ -180,6 +193,7 @@
         <div id="miniCubes"></div>
       </div>
     </div>
+    <div id="cubeGlow"></div>
   </div>
 
   <script>
@@ -198,6 +212,7 @@
     function applySize() {
       const cubeEl = $('cube');
       const wrapEl = $('cubeWrap');
+      const glowEl = $('cubeGlow');
 
       cubeEl.style.width = CS + 'px';
       cubeEl.style.height = CS + 'px';
@@ -206,14 +221,17 @@
       wrapEl.style.width = CS + 'px';
       wrapEl.style.height = CS + 'px';
 
-      const Z = HS - 0.25;
+      const glowSize = Math.round(CS * 1.85);
+      glowEl.style.width = glowSize + 'px';
+      glowEl.style.height = glowSize + 'px';
+
       const faces = {
-        front: `translateZ(${Z}px)`,
-        back: `rotateY(180deg) translateZ(${Z}px)`,
-        right: `rotateY(90deg) translateZ(${Z}px)`,
-        left: `rotateY(-90deg) translateZ(${Z}px)`,
-        top: `rotateX(90deg) translateZ(${Z}px)`,
-        bottom: `rotateX(-90deg) translateZ(${Z}px)`
+        front: `translateZ(${HS}px)`,
+        back: `rotateY(180deg) translateZ(${HS}px)`,
+        right: `rotateY(90deg) translateZ(${HS}px)`,
+        left: `rotateY(-90deg) translateZ(${HS}px)`,
+        top: `rotateX(90deg) translateZ(${HS}px)`,
+        bottom: `rotateX(-90deg) translateZ(${HS}px)`
       };
       document.querySelectorAll('.face').forEach(f => {
         f.style.transform = faces[f.dataset.face];
@@ -272,7 +290,6 @@
       miniDefs.forEach(({ sf, xf, yf, zf }) => {
         const size = Math.round((CS * sf) / 2) * 2;
         const half = size / 2;
-        const zHalf = half - 0.2;
         const x = CS * xf, y = CS * yf, z = CS * zf;
 
         const outer = document.createElement('div');
@@ -288,12 +305,12 @@
         inner.className = 'mini-spin';
 
         [
-          `translateZ(${zHalf}px)`,
-          `rotateY(180deg) translateZ(${zHalf}px)`,
-          `rotateY(90deg) translateZ(${zHalf}px)`,
-          `rotateY(-90deg) translateZ(${zHalf}px)`,
-          `rotateX(90deg) translateZ(${zHalf}px)`,
-          `rotateX(-90deg) translateZ(${zHalf}px)`
+          `translateZ(${half}px)`,
+          `rotateY(180deg) translateZ(${half}px)`,
+          `rotateY(90deg) translateZ(${half}px)`,
+          `rotateY(-90deg) translateZ(${half}px)`,
+          `rotateX(90deg) translateZ(${half}px)`,
+          `rotateX(-90deg) translateZ(${half}px)`
         ].forEach(tr => {
           const f = document.createElement('div');
           f.className = 'mini-face';
@@ -364,6 +381,7 @@
     const targetTilt = { x: -18, z: 0 };
     let lastCube = 0;
     const cubeNode = $('cube');
+    const glowNode = $('cubeGlow');
 
     function updateCube(t) {
       const dt = Math.min((t - lastCube) / 1000, 0.1);
@@ -379,6 +397,7 @@
       const bob = Math.sin(t / 1400) * (CS * 0.05);
       cubeNode.style.transform =
         `translate3d(0, ${bob}px, 0) rotateX(${rot.x}deg) rotateY(${rot.y}deg) rotateZ(${rot.z}deg)`;
+      glowNode.style.transform = `translate3d(0, ${bob}px, 0)`;
 
       const inv = `rotateZ(${-rot.z}deg) rotateY(${-rot.y}deg) rotateX(${-rot.x}deg)`;
       for (let i = 0; i < fireflies.length; i++) fireflies[i].style.transform = inv;
